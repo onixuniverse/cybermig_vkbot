@@ -1,0 +1,14 @@
+{
+  "one_time": false,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "\uD83D\uDC4D Готово!"
+        },
+        "color": "primary"
+      }
+    ]
+  ]
+}

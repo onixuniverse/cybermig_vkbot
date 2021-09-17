@@ -1,0 +1,37 @@
+{
+  "one_time": false,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "⌨️ Команды"
+        },
+        "color": "secondary"
+      },
+      {
+        "action": {
+          "type": "text",
+          "label": "\uD83D\uDCAC Обратная связь"
+        },
+        "color": "secondary"
+      },
+      {
+        "action": {
+          "type": "text",
+          "label": "❓ ЧаВо"
+        },
+        "color": "secondary"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "\uD83D\uDCC4 На главную"
+        },
+        "color": "primary"
+      }
+    ]
+  ]
+}

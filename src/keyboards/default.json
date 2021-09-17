@@ -1,0 +1,30 @@
+{
+  "one_time": false,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "\uD83D\uDC81 Регистрация"
+        },
+        "color": "primary"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "ℹ️ Информация"
+        },
+        "color": "secondary"
+      },
+      {
+        "action": {
+          "type": "text",
+          "label": "\uD83C\uDD98 Помощь"
+        },
+        "color": "secondary"
+      }
+    ]
+  ]
+}
