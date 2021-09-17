@@ -8,7 +8,7 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
 
 from src import keyboards, db, gmail
-from src.threadings import create_thread
+from src.threading import create_thread
 
 
 class Bot:
