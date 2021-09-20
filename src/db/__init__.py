@@ -4,6 +4,7 @@ def check(conn, cur):
         first_name TEXT,
         last_name TEXT,
         patronymic TEXT,
+        age TEXT,
         school_name TEXT,
         class_name TEXT,
         CODE TEXT);
