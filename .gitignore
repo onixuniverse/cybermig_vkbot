@@ -1,6 +1,7 @@
 .idea/
 config.py
 db.sqlite3
+gsheets_credentials.json
 
 ### Python template
 # Byte-compiled / optimized / DLL files
@@ -142,3 +143,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+!/utils/gsheets_credentials.json

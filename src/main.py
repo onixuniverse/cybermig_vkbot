@@ -7,7 +7,7 @@ from vk_api import VkUpload
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
 
-from src import keyboards, db, gmail
+from src import keyboards, db, gmail, gsheets
 from src.threading import create_thread
 
 
@@ -151,10 +151,13 @@ class Bot:
                             return True
                     return False
 
-    def admin_page(self, event):
+    def export_users(self, event):
         if event.user_id in self.admin_list_id:
-            row = db.fetchall(self.cur, "SELECT * FROM users")
-            print(row)
+            rows = db.fetchall(self.cur, "SELECT * FROM users")
+            positive, negative = gsheets.add_to_table(rows)
+
+            msg = f"Добавлено пользователей: {positive}\nУже присутствуют в таблице: {negative}"
+            self.send_msg(event.user_id, msg)
 
     def message_wait(self):
         for event in self.long_poll.listen():
@@ -217,7 +220,7 @@ class Bot:
 
                 # Админ-команды
                 elif event.message == "//экспорт":
-                    self.admin_page(event)
+                    self.export_users(event)
 
                 # Регистрация пользователей в проекте
                 elif event.message in reg_page_words:
