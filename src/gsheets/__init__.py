@@ -1,8 +1,10 @@
 import gspread
 
-google_client = gspread.service_account(filename=r"utils\gsheets_credentials.json")
-sheet = google_client.open_by_key('12qQo4thV3p_q2_b2uHPcsGA9LZcBaGqOmbeb2bCPyz4')
-worksheet = sheet.sheet1
+from utils.config import sheet_id
+
+google_client = gspread.service_account(filename=r"./utils/credentials_google.json")
+spreadsheet = google_client.open_by_key(sheet_id)
+worksheet = spreadsheet.sheet1
 
 
 def add_to_table(rows: list):

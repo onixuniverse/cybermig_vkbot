@@ -3,14 +3,10 @@ import imaplib
 
 from utils import config
 
-host = "imap.gmail.com"
-username = config.email_username
-password = config.email_password
-
 
 def get_inbox():
-    mail = imaplib.IMAP4_SSL(host)
-    mail.login(username, password)
+    mail = imaplib.IMAP4_SSL("imap.gmail.com")
+    mail.login(config.email_address, config.email_password)
     mail.select("inbox")
 
     _, search_data = mail.search(None, "UNSEEN")

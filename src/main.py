@@ -9,6 +9,7 @@ from vk_api.utils import get_random_id
 
 from src import keyboards, db, gmail, gsheets
 from src.threading import create_thread
+from utils.config import email_address
 
 
 class Bot:
@@ -21,7 +22,7 @@ class Bot:
         self.vk_upload = VkUpload(self.vk_session)
         self.vk = self.vk_session.get_api()
 
-        self.email_address = "cybermig.league@gmail.com"
+        self.email_address = email_address
         self.admin_list_id = [6700376, 219871037]
 
     def start(self):
