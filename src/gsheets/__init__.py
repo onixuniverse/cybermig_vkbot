@@ -1,9 +1,11 @@
+import os
 import gspread
+from dotenv import load_dotenv
 
-from utils.config import sheet_id
+load_dotenv()
 
-google_client = gspread.service_account(filename=r"./utils/credentials_google.json")
-spreadsheet = google_client.open_by_key(sheet_id)
+google_client = gspread.service_account(filename="credentials_google.json")
+spreadsheet = google_client.open_by_key(os.getenv("SHEET_ID"))
 worksheet = spreadsheet.sheet1
 
 

@@ -1,20 +1,23 @@
+import os
 import random
 import sqlite3
 import string
 
 import vk_api
+from dotenv import load_dotenv
 from vk_api import VkUpload
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
 
 from src import keyboards, db, gmail, gsheets
 from src.threading import create_thread
-from utils.config import email_address
+
+load_dotenv()
 
 
 class Bot:
     def __init__(self, api_token):
-        self.conn = sqlite3.connect(r"./db.sqlite3", check_same_thread=False)
+        self.conn = sqlite3.connect(os.getenv("DB_URL"), check_same_thread=False)
         self.cur = self.conn.cursor()
 
         self.vk_session = vk_api.VkApi(token=api_token)
@@ -22,7 +25,7 @@ class Bot:
         self.vk_upload = VkUpload(self.vk_session)
         self.vk = self.vk_session.get_api()
 
-        self.email_address = email_address
+        self.email_address = os.getenv("EMAIL_ADDRESS")
         self.admin_list_id = [6700376, 219871037]
 
     def start(self):

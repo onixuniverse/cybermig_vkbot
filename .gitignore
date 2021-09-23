@@ -140,5 +140,4 @@ cython_debug/
 
 # Other
 .idea/
-config.py
 credentials_google.json

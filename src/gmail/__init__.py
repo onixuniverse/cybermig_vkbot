@@ -1,12 +1,15 @@
 import email
 import imaplib
+import os
 
-from utils import config
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def get_inbox():
     mail = imaplib.IMAP4_SSL("imap.gmail.com")
-    mail.login(config.email_address, config.email_password)
+    mail.login(os.getenv("EMAIL_ADDRESS"), os.getenv("EMAIL_PASSWORD"))
     mail.select("inbox")
 
     _, search_data = mail.search(None, "UNSEEN")
