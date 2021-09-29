@@ -9,16 +9,19 @@ from vk_api import VkUpload
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
 
-from src import keyboards, db, gmail, gsheets
-from src.threading import create_thread
+from src import keyboards, db, gmail, gsheets, logger, threading
 
 load_dotenv()
 
 
 class Bot:
     def __init__(self, api_token):
-        self.conn = sqlite3.connect(os.getenv("DB_URL"), check_same_thread=False)
-        self.cur = self.conn.cursor()
+        try:
+            self.conn = sqlite3.connect(os.getenv("DB_URL"), check_same_thread=False)
+            self.cur = self.conn.cursor()
+            logger.info("БД успешно подключена!")
+        except sqlite3.DatabaseError:
+            logger.error("Не удалось подключить БД.")
 
         self.vk_session = vk_api.VkApi(token=api_token)
         self.long_poll = VkLongPoll(self.vk_session)
@@ -29,7 +32,7 @@ class Bot:
         self.admin_list_id = [6700376, 219871037]
 
     def start(self):
-        print("Бот запущен!")
+        logger.info("Бот начал работу.")
 
         db.check(self.conn, self.cur)
         self.message_wait()
@@ -52,9 +55,10 @@ class Bot:
             reg_msg_0 = "Твоя регистрация в проекте начата, так держать! 😌\n\nДля начала, напиши своё ФИО в одном " \
                         "сообщении, но помни, что с одного аккаунта ВК можно зарегистрироваться ТОЛЬКО один " \
                         "раз!\n\nПиши ТОЛЬКО своё ФИО, так как оно будет занесено в форму регистрации и изменить его " \
-                        "уже будет нельзя! "
+                        "уже будет нельзя!"
             self.send_msg(user_id, reg_msg_0)
             user_full_name = self.wait_full_name_from_user(user_id)
+            logger.info(f"{user_id} начал регистрацию.")
 
             reg_msg_1 = "Сейчас, скажи мне сколько тебе лет?"
             self.send_msg(user_id, reg_msg_1)
@@ -68,11 +72,11 @@ class Bot:
             self.send_msg(user_id, reg_msg_3)
             user_class = self.wait_class_from_user(user_id)
 
-            CODE = ''.join(random.sample(string.ascii_uppercase, k=6))
+            code = ''.join(random.sample(string.ascii_uppercase, k=6))
 
             db.execute(self.conn, self.cur, "INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                        (user_id, user_full_name[0], user_full_name[1], user_full_name[2], user_age,
-                        user_educational_institution, user_class, CODE))
+                        user_educational_institution, user_class, code))
 
             reg_msg_4 = "Так держать! 🎉 Ты прошел первый этап регистрации.\n Теперь я отправлю тебе несколько " \
                         "файлов, которые тебе нужно распечатать, заполнить и отправить на почту скан или фотографию." \
@@ -82,12 +86,14 @@ class Bot:
             self.send_msg(user_id, reg_msg_4, keyboards.ready)
 
             reg_file_msg = "📄 Первый файл – https://docs.google.com/document/d/1H3vmFrpMDufeaM0c0Yh5Z54Au5PtvXpz" \
-                           "/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true\n 📄 Второй файл – " \
-                           "https://docs.google.com/document/d/19WhOYSJieVnCnh2P0Q7iEOB8Wvj8qHQS/edit?usp=sharing" \
-                           "&ouid=108319410384893119199&rtpof=true&sd=true "
+                           "/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true\n" \
+                           "📄 Второй файл – https://docs.google.com/document/d/19WhOYSJieVnCnh2P0Q7iEOB8Wvj8qHQS" \
+                           "/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true\n" \
+                           "📄 Третий файл – https://docs.google.com/document/d/17dG2x6Yua" \
+                           "-EXv2vu9TbZ5k9HnwX7Hc0nWHvVJ6q29g0/edit?usp=sharing "
             self.send_msg(user_id, reg_file_msg, keyboards.ready)
 
-            reg_msg_code = f"Почта: {self.email_address}\n{CODE} – этот код тебе нужно вставить в поле ТЕМА в " \
+            reg_msg_code = f"Почта: {self.email_address}\n{code} – этот код тебе нужно вставить в поле ТЕМА в " \
                            f"сообщении вместе с фотографиями или сканом на почту.\n\nКак отправишь жми \"👍 Готово!\" "
             self.send_msg(user_id, reg_msg_code, keyboards.ready)
 
@@ -163,6 +169,8 @@ class Bot:
             msg = f"Добавлено пользователей: {positive}\nУже присутствуют в таблице: {negative}"
             self.send_msg(event.user_id, msg)
 
+            logger.debug(f"{positive} добавлено в таблицу. {negative} уже есть в таблице.")
+
     def message_wait(self):
         for event in self.long_poll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
@@ -227,4 +235,4 @@ class Bot:
 
                 # Регистрация пользователей в проекте
                 elif event.message.lower() in reg_page_words:
-                    create_thread(self.user_registration, (event.user_id,))
+                    threading.create_thread(self.user_registration, (event.user_id,))

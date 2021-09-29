@@ -2,11 +2,16 @@ import os
 import gspread
 from dotenv import load_dotenv
 
+from src import logger
+
 load_dotenv()
 
-google_client = gspread.service_account(filename="credentials_google.json")
-spreadsheet = google_client.open_by_key(os.getenv("SHEET_ID"))
-worksheet = spreadsheet.sheet1
+try:
+    google_client = gspread.service_account(filename="credentials_google.json")
+    spreadsheet = google_client.open_by_key(os.getenv("SHEET_ID"))
+    worksheet = spreadsheet.sheet1
+except gspread.GSpreadException:
+    logger.error("Не удалось подключиться к Google Spreadsheets!")
 
 
 def add_to_table(rows: list):
