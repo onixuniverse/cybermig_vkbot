@@ -1,4 +1,5 @@
 import os
+import time
 
 import requests
 
@@ -10,11 +11,13 @@ load_dotenv()
 
 
 def _start():
-    try:
-        bot = Bot(api_token=os.getenv("API_TOKEN"))
-        bot.start()
-    except requests.exceptions.ReadTimeout:
-        logger.warning("Переподключение к VK Api")
+    while True:
+        try:
+            bot = Bot(api_token=os.getenv("API_TOKEN"))
+            bot.start()
+        except requests.exceptions.ReadTimeout:
+            logger.warning("Переподключение к VK Api. \"Exception: ReadTimeout\"")
+            time.sleep(15)
 
 
 _start()
