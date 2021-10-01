@@ -1,6 +1,5 @@
 import os
 import random
-import sqlite3
 import string
 
 import vk_api
@@ -16,12 +15,8 @@ load_dotenv()
 
 class Bot:
     def __init__(self, api_token):
-        try:
-            self.conn = sqlite3.connect(os.getenv("DB_URL"), check_same_thread=False)
-            self.cur = self.conn.cursor()
-            logger.info("БД успешно подключена!")
-        except sqlite3.DatabaseError:
-            logger.error("Не удалось подключить БД.")
+        self.conn = db.connect()
+        self.cur = self.conn.cursor()
 
         self.vk_session = vk_api.VkApi(token=api_token)
         self.long_poll = VkLongPoll(self.vk_session)
