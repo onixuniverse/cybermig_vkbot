@@ -53,6 +53,13 @@ class Bot:
 
             logger.debug(f"{positive} добавлено в таблицу. {negative} уже есть в таблице.")
 
+    def delete_user(self, event):
+        if event.user_id in self.admin_list_id:
+            user_id = event.message.split()
+            rows = db.fetchone(self.cur, "SELECT * FROM users WHERE vk_user_id = ?", (user_id[1],))
+
+            
+
     def message_wait(self):
         for event in self.long_poll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
@@ -117,6 +124,9 @@ class Bot:
                 elif event.message == "//экспорт":
                     self.export_users(event)
 
+                elif event.message == "//удалить":
+                    self.delete_user(event)
+
                 # Регистрация пользователей в проекте
                 elif event.message.lower() in reg_page_words:
                     threading.create_thread(self.user_registration, (event.user_id,))
@@ -133,7 +143,7 @@ class Bot:
             user_full_name = self.wait_full_name_from_user(user_id)
             logger.info(f"{user_id} начал регистрацию.")
 
-            reg_msg_1 = "Сейчас, скажи мне сколько тебе лет?"
+            reg_msg_1 = "Сколько тебе лет?"
             self.send_msg(user_id, reg_msg_1)
             user_age = self.wait_age_from_user(user_id)
 
@@ -151,11 +161,9 @@ class Bot:
                        (user_id, user_full_name[0], user_full_name[1], user_full_name[2], user_age,
                         user_educational_institution, user_class, code))
 
-            reg_msg_4 = "Так держать! 🎉 Ты прошел первый этап регистрации.\n Теперь я отправлю тебе несколько " \
+            reg_msg_4 = "Так держать! 🎉 Ты прошел первый этап регистрации.\n\n Теперь я отправлю тебе несколько " \
                         "файлов, которые тебе нужно распечатать, заполнить и отправить на почту скан или фотографию." \
-                        "\nТакже, тебе нужна медицинская справка о допуске к спортивным занятиям, её ты можешь взять " \
-                        "у врача-педиатра или спросить про неё в регистратуре твоей больницы.\n\n ❗ Но! Укажи в ТЕМЕ " \
-                        "сообщения код, который я пришлю тебе позже. "
+                        "\n\n ❗ Но! Укажи в ТЕМЕ сообщения код, который я пришлю тебе позже. "
             self.send_msg(user_id, reg_msg_4, keyboards.ready)
 
             reg_file_msg = "📄 Первый файл – https://docs.google.com/document/d/1H3vmFrpMDufeaM0c0Yh5Z54Au5PtvXpz" \
@@ -163,7 +171,9 @@ class Bot:
                            "📄 Второй файл – https://docs.google.com/document/d/19WhOYSJieVnCnh2P0Q7iEOB8Wvj8qHQS" \
                            "/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true\n" \
                            "📄 Третий файл – https://docs.google.com/document/d/17dG2x6Yua" \
-                           "-EXv2vu9TbZ5k9HnwX7Hc0nWHvVJ6q29g0/edit?usp=sharing "
+                           "-EXv2vu9TbZ5k9HnwX7Hc0nWHvVJ6q29g0/edit?usp=sharing " \
+                           "📄 Четвертый файл – https://docs.google.com/document/d/1-VQ8mGoA8tqE4gLIWQxCy0kMWWNQqDFA" \
+                           "/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true "
             self.send_msg(user_id, reg_file_msg, keyboards.ready)
 
             reg_msg_code = f"Почта: {self.email_address}\n{code} – этот код тебе нужно вставить в поле ТЕМА в " \
