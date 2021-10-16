@@ -165,15 +165,13 @@ class Bot:
                         "файлов, которые тебе нужно распечатать, заполнить и отправить на почту скан или фотографию." \
                         "\n\n ❗ Но! Укажи в ТЕМЕ сообщения код, который я пришлю тебе позже. "
             self.send_msg(user_id, reg_msg_4, keyboards.ready)
-
-            reg_file_msg = "📄 Первый файл – https://docs.google.com/document/d/1H3vmFrpMDufeaM0c0Yh5Z54Au5PtvXpz" \
-                           "/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true\n" \
-                           "📄 Второй файл – https://docs.google.com/document/d/19WhOYSJieVnCnh2P0Q7iEOB8Wvj8qHQS" \
-                           "/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true\n" \
-                           "📄 Третий файл – https://docs.google.com/document/d/17dG2x6Yua" \
-                           "-EXv2vu9TbZ5k9HnwX7Hc0nWHvVJ6q29g0/edit?usp=sharing " \
-                           "📄 Четвертый файл – https://docs.google.com/document/d/1-VQ8mGoA8tqE4gLIWQxCy0kMWWNQqDFA" \
-                           "/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true "
+            
+            file1 = "https://docs.google.com/document/d/19WhOYSJieVnCnh2P0Q7iEOB8Wvj8qHQS/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true"
+            file2 = "https://docs.google.com/document/d/17dG2x6Yua-EXv2vu9TbZ5k9HnwX7Hc0nWHvVJ6q29g0/edit?usp=sharing"
+            file3 = "https://docs.google.com/document/d/1-VQ8mGoA8tqE4gLIWQxCy0kMWWNQqDFA/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true"
+            reg_file_msg = f"📄 Первый файл – {file1}\n" \
+                           f"📄 Второй файл – {file2}\n" \
+                           f"📄 Третий файл – {file3}"
             self.send_msg(user_id, reg_file_msg, keyboards.ready)
 
             reg_msg_code = f"Почта: {self.email_address}\n{code} – этот код тебе нужно вставить в поле ТЕМА в " \
