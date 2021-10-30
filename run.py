@@ -16,7 +16,7 @@ def _start():
             bot = Bot(api_token=os.getenv("API_TOKEN"))
             bot.start()
         except:
-            logger.warning("Переподключение к VK Api. \"Exception: ReadTimeout\"")
+            logger.warning("Переподключение...")
             time.sleep(15)
 
 
