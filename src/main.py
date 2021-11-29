@@ -58,7 +58,10 @@ class Bot:
             msg_text = event.text[11::]
             rows = db.fetchall(self.cur, "SELECT vk_user_id FROM users")
             for id in rows:
-                self.vk.messages.send(peer_id=id[0], message=msg_text, random_id=get_random_id())
+                try:
+                    self.vk.messages.send(peer_id=id[0], message=msg_text, random_id=get_random_id())
+                except:
+                    pass
 
     def message_wait(self):
         for event in self.long_poll.listen():

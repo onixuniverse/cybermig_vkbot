@@ -1,8 +1,6 @@
 import os
 import time
 
-import requests
-
 from src import logger
 from src.main import Bot
 from dotenv import load_dotenv
@@ -18,7 +16,7 @@ def _start():
         except Exception as exc:
             logger.error(exc)
             logger.warning("Переподключение...")
-            time.sleep(15)
+            time.sleep(1)
 
 
 _start()
