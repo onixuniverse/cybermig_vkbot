@@ -51,14 +51,14 @@ class Bot:
             msg = f"Добавлено пользователей: {positive}\nУже присутствуют в таблице: {negative}"
             self.send_msg(event.user_id, msg)
 
-            logger.debug(f"{positive} добавлено в таблицу. {negative} уже есть в таблице.")
+            logger.info(f"{positive} добавлено в таблицу. {negative} уже есть в таблице.")
 
-    def delete_user(self, event):
+    def mailing(self, event):
         if event.user_id in self.admin_list_id:
-            user_id = event.message.split()
-            rows = db.fetchone(self.cur, "SELECT * FROM users WHERE vk_user_id = ?", (user_id[1],))
-
-            
+            msg_text = event.text[11::]
+            rows = db.fetchall(self.cur, "SELECT vk_user_id FROM users")
+            for id in rows:
+                self.vk.messages.send(peer_id=id[0], message=msg_text, random_id=get_random_id())
 
     def message_wait(self):
         for event in self.long_poll.listen():
@@ -108,9 +108,13 @@ class Bot:
 
                 # Обратная связь
                 elif event.message == "💬 Обратная связь" or event.message.lower() == "обратная связь":
-                    callback_msg = "• Марина Александровна Иванова\nVK: https://vk.com/marinaangelivanova\n" \
-                                   "Instagram: https://www.instagram.com/iteacherma/\n\n• Дарья Андреевна Алексеева" \
-                                   "\nVK: https://vk.com/aleesk\nInstagram: https://www.instagram.com/teach_hist/ "
+                    callback_msg = "• Марина Александровна Иванова\n" \
+                                   "VK: https://vk.com/marinaangelivanova\n" \
+                                   "Instagram: https://www.instagram.com/iteacherma/\n\n" \
+                                   "• Дарья Андреевна Мезенцева" \
+                                   "\nVK: https://vk.com/aleesk\n" \
+                                   "Instagram: https://www.instagram.com/teach_hist/\n\n" \
+                                   "По поводу ошибок бота писать на почту: warofmyhome@gmail.com"
                     self.send_msg(event.user_id, callback_msg, keyboards.help_page)
 
                 # ЧаВо
@@ -121,11 +125,11 @@ class Bot:
                     self.send_msg(event.user_id, "".join(faq_msg), keyboards.help_page)
 
                 # Админ-команды
-                elif event.message == "//экспорт":
+                elif "//экспорт" in event.message:
                     self.export_users(event)
 
-                elif event.message == "//удалить":
-                    self.delete_user(event)
+                elif "//рассылка" in event.message:
+                    self.mailing(event)
 
                 # Регистрация пользователей в проекте
                 elif event.message.lower() in reg_page_words:
@@ -165,7 +169,7 @@ class Bot:
                         "файлов, которые тебе нужно распечатать, заполнить и отправить на почту скан или фотографию." \
                         "\n\n ❗ Но! Укажи в ТЕМЕ сообщения код, который я пришлю тебе позже. "
             self.send_msg(user_id, reg_msg_4, keyboards.ready)
-            
+
             file1 = "https://docs.google.com/document/d/19WhOYSJieVnCnh2P0Q7iEOB8Wvj8qHQS/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true"
             file2 = "https://docs.google.com/document/d/17dG2x6Yua-EXv2vu9TbZ5k9HnwX7Hc0nWHvVJ6q29g0/edit?usp=sharing"
             file3 = "https://docs.google.com/document/d/1-VQ8mGoA8tqE4gLIWQxCy0kMWWNQqDFA/edit?usp=sharing&ouid=108319410384893119199&rtpof=true&sd=true"
@@ -175,7 +179,8 @@ class Bot:
             self.send_msg(user_id, reg_file_msg, keyboards.ready)
 
             reg_msg_code = f"Почта: {self.email_address}\n{code} – этот код тебе нужно вставить в поле ТЕМА в " \
-                           f"сообщении вместе с фотографиями или сканом на почту.\n\nКак отправишь жми \"👍 Готово!\" "
+                           f"сообщении вместе с фотографиями или сканом на почту.\n\nКак отправишь жми \"👍 Готово!\"" \
+                           f"\n\nОтвет поступит в течении суток. "
             self.send_msg(user_id, reg_msg_code, keyboards.ready)
 
             check_inbox_msg = False
@@ -239,4 +244,4 @@ class Bot:
                     for msg in email_msgs:
                         if msg['title'] == unique_code:
                             return True
-                    return False
+                return False

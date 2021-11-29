@@ -15,7 +15,8 @@ def _start():
         try:
             bot = Bot(api_token=os.getenv("API_TOKEN"))
             bot.start()
-        except:
+        except Exception as exc:
+            logger.error(exc)
             logger.warning("Переподключение...")
             time.sleep(15)
 
